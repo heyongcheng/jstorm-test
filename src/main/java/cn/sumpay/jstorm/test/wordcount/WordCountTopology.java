@@ -34,5 +34,4 @@ public class WordCountTopology {
             localCluster.shutdown();
         }
     }
-
 }

@@ -14,16 +14,34 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jstorm.version>2.2.1</jstorm.version>
+        <jstorm.version>2.4.0</jstorm.version>
+        <kafka.version>0.10.1.0</kafka.version>
+        <yaml.version>1.21</yaml.version>
     </properties>
-
 
     <dependencies>
         <dependency>
             <groupId>com.alibaba.jstorm</groupId>
             <artifactId>jstorm-core</artifactId>
             <version>${jstorm.version}</version>
+            <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.jstorm</groupId>
+            <artifactId>flux-core</artifactId>
+            <version>${jstorm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.sumpay</groupId>
+            <artifactId>jstorm-kafka</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${yaml.version}</version>
+        </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -31,4 +49,42 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <configuration>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.alibaba.jstorm.flux.Flux</mainClass>
+                                </transformer>
+                            </transformers>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.slf4j:*</exclude>
+                                    <exclude>io.netty:*</exclude>
+                                    <exclude>ch.qos.logback:*</exclude>
+                                    <exclude>javax.servlet:*</exclude>
+                                    <exclude>org.rocksdb:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

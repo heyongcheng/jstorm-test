@@ -1,0 +1,50 @@
+name: "riskLimitTopology"
+config:
+  topology.workers: 2
+# spout definitions
+spouts:
+  - id: "spout"
+    className: "cn.sumpay.jstorm.test.limit.RiskDataSpout"
+    constructorArgs:
+      - "classpath:application.yaml"
+    parallelism: 1
+# bolt definitions
+bolts:
+    # 日志解析
+  - id: "bolt-log"
+    className: "cn.sumpay.jstorm.test.limit.LogParseBolt"
+    parallelism: 4
+    # 消息解析
+  - id: "bolt-message"
+    className: "cn.sumpay.jstorm.test.limit.MessageParseBolt"
+    parallelism: 4
+    # 字段补全
+  - id: "bolt-expand"
+    className: "cn.sumpay.jstorm.test.limit.ExpandFieldBolt"
+    parallelism: 4
+    # 脚本计算
+  - id: "bolt-count"
+    className: "cn.sumpay.jstorm.test.limit.CountBolt"
+    parallelism: 1
+#stream definitions
+streams:
+  - name: "spout --> bolt-log"
+    from: "spout"
+    to: "bolt-log"
+    grouping:
+      type: LOCAL_OR_SHUFFLE
+  - name: "bolt-log --> bolt-message"
+    from: "bolt-log"
+    to: "bolt-message"
+    grouping:
+      type: LOCAL_OR_SHUFFLE
+  - name: "bolt-message --> bolt-expand"
+    from: "bolt-message"
+    to: "bolt-expand"
+    grouping:
+      type: LOCAL_OR_SHUFFLE
+  - name: "bolt-expand --> bolt-count"
+    from: "bolt-expand"
+    to: "bolt-count"
+    grouping:
+      type: SHUFFLE
