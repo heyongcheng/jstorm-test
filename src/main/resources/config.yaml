@@ -22,10 +22,16 @@ bolts:
   - id: "bolt-expand"
     className: "cn.sumpay.jstorm.test.limit.ExpandFieldBolt"
     parallelism: 4
-    # 脚本计算
-  - id: "bolt-count"
-    className: "cn.sumpay.jstorm.test.limit.CountBolt"
-    parallelism: 1
+    ################ 脚本计算 ################
+  - id: "userPayAmountBolt"
+    className: "cn.sumpay.jstorm.test.limit.UserPayAmountBolt"
+    parallelism: 2
+  - id: "userPayCountBolt"
+    className: "cn.sumpay.jstorm.test.limit.UserPayCountBolt"
+    parallelism: 2
+  - id: "userLastPayTimeBolt"
+    className: "cn.sumpay.jstorm.test.limit.UserLastPayTimeBolt"
+    parallelism: 2
 #stream definitions
 streams:
   - name: "spout --> bolt-log"
@@ -43,8 +49,18 @@ streams:
     to: "bolt-expand"
     grouping:
       type: LOCAL_OR_SHUFFLE
-  - name: "bolt-expand --> bolt-count"
+  - name: "bolt-expand --> userPayAmountBolt"
     from: "bolt-expand"
-    to: "bolt-count"
+    to: "userPayAmountBolt"
+    grouping:
+      type: SHUFFLE
+  - name: "bolt-expand --> userPayCountBolt"
+    from: "bolt-expand"
+    to: "userPayCountBolt"
+    grouping:
+      type: SHUFFLE
+  - name: "bolt-expand --> userLastPayTimeBolt"
+    from: "bolt-expand"
+    to: "userLastPayTimeBolt"
     grouping:
       type: SHUFFLE
