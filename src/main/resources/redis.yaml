@@ -2,7 +2,7 @@ redis:
   database: 0
   sentinel:
     master: mymaster
-    nodes: 192.168.13.252:26379,192.168.13.253:26379
+    nodes: 127.0.0.1:26379,127.0.0.1:26379
   pool:
     max-idle: 8
     max-active: 1000
