@@ -5,4 +5,4 @@ kafka:
 group:
   id: jstorm-consumer-group
 bootstrap:
-  servers: 192.168.13.252:9092,192.168.13.253:9092
+  servers: 127.0.0.1:9092,127.0.0.1:9092
